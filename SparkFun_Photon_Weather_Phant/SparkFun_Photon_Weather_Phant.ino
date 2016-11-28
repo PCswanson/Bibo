@@ -520,13 +520,13 @@ void getWeather()
 int postToPhant()
 {
     //phant.add("altf", altf);//add this line if using altitude instead
-    phant.add("temp", baroTemp);
+    phant.add("barotemp", baroTemp);
     phant.add("humidity", humidity);
     phant.add("pressure", pascals/100);
     //phant.add("rainin", rainin);
     //phant.add("soiltempf", soiltempf);
   //  phant.add("soilmoisture", soilMoisture);
-  //  phant.add("tempf", tempf);
+   phant.add("tempf", tempf);
   //  phant.add("winddir", winddir);
   //  phant.add("windspeedmph", windspeedmph);
 
