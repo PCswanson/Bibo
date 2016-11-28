@@ -133,8 +133,8 @@ Weather sensor;
 
 ////////////PHANT STUFF//////////////////////////////////////////////////////////////////
 const char server[] = "data.sparkfun.com";
-const char publicKey[] = "DJLWNrvxR0tDx190GJbg";
-const char privateKey[] = "P4AlK0d51DceyBVW1m59";
+const char publicKey[] = "0lqbbKWjqvuqNovxX379";
+const char privateKey[] = "D6MRRY7eMAcYq0AxyeMW";
 Phant phant(server, publicKey, privateKey);
 /////////////////////////////////////////////////////////////////////////////////////////
 
