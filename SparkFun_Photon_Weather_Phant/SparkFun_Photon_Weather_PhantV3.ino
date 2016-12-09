@@ -1,40 +1,4 @@
-/******************************************************************************
-  SparkFun_Photon_Weather_Basic_Soil_Meters.ino
-  SparkFun Photon Weather Shield basic example with soil moisture and temp
-  and weather meter readings including wind speed, wind direction and rain.
-  Joel Bartlett @ SparkFun Electronics
-  Original Creation Date: May 18, 2015
-  Based on the Wimp Weather Station sketch by: Nathan Seidle
-  https://github.com/sparkfun/Wimp_Weather_Station
-  This sketch prints the temperature, humidity, barometric pressure to the Serial port
-  and posts that data to the data.sparkfun.com data collection service (aka Phant).
-  Hardware Connections:
-	This sketch was written specifically for the Photon Weather Shield,
-	which connects the HTU21D and MPL3115A2 to the I2C bus by default.
-  If you have an HTU21D and/or an MPL3115A2 breakout,	use the following
-  hardware setup:
-      HTU21D ------------- Photon
-      (-) ------------------- GND
-      (+) ------------------- 3.3V (VCC)
-       CL ------------------- D1/SCL
-       DA ------------------- D0/SDA
-    MPL3115A2 ------------- Photon
-      GND ------------------- GND
-      VCC ------------------- 3.3V (VCC)
-      SCL ------------------ D1/SCL
-      SDA ------------------ D0/SDA
-  Development environment specifics:
-  	IDE: Particle Dev
-  	Hardware Platform: Particle Photon
-                       Particle Core
-  This code is beerware; if you see me (or any other SparkFun
-  employee) at the local, and you've found our code helpful,
-  please buy us a round!
-  Distributed as-is; no warranty is given.
-*******************************************************************************/
 #include "SparkFun_Photon_Weather_Shield_Library.h"
-#include "OneWire.h"
-#include "spark-dallas-temperature.h"
 #include "SparkFunPhant.h"
 
 float humidity = 0;
@@ -84,7 +48,6 @@ void setup()
     getWeather();
 
     getWeather();
-    printInfo();
     postToPhant();
 }
 //---------------------------------------------------------------
@@ -96,44 +59,15 @@ void loop()
     //alter this number to change the amount of time between each reading
     //this number is low for troubleshooting purposes. Be sure to change it
     //once you deploy so as not to send too much data.
-    if(count == 10)
+    if(count == 10000)
     {
       //Get readings from all sensors
        getWeather();
-       printInfo();
        postToPhant();
        count = 0;
     }
 }
-//---------------------------------------------------------------
-void printInfo()
-{
-      Serial.print("Temp:");
-      Serial.print(tempf);
-      Serial.print("F, ");
 
-      Serial.print("Humidity:");
-      Serial.print(humidity);
-      Serial.print("%, ");
-
-      Serial.print("Baro_Temp:");
-      Serial.print(baroTemp);
-      Serial.print("F, ");
-
-      Serial.print("Pressure:");
-      Serial.print(pascals/100);
-      Serial.println("hPa, ");
-      //The MPL3115A2 outputs the pressure in Pascals. However, most weather stations
-      //report pressure in hectopascals or millibars. Divide by 100 to get a reading
-      //more closely resembling what online weather reports may say in hPa or mb.
-      //Another common unit for pressure is Inches of Mercury (in.Hg). To convert
-      //from mb to in.Hg, use the following formula. P(inHg) = 0.0295300 * P(mb)
-      //More info on conversion can be found here:
-      //www.srh.noaa.gov/images/epz/wxcalc/pressureConversion.pdf
-
-
-}
-//---------------------------------------------------------------
 void getWeather()
 {
     // Measure Relative Humidity from the HTU21D or Si7021
@@ -180,6 +114,7 @@ int postToPhant()
         }
         if (strstr(response, "200 OK"))
         {
+            Serial.println(tempf);
             Serial.println("Post success!");
             retVal = 1;
         }
