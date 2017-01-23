@@ -71,7 +71,6 @@ float baroTemp = 0;
 int soilMoisture = 0;
 
 int count = 0;
-char deviceName = Particle.publish(spark/device/name);
 
 // volatiles are subject to modification by IRQs
 volatile long lastWindIRQ = 0;
@@ -124,13 +123,11 @@ void setup()
     pinMode(SOIL_MOIST_POWER, OUTPUT);//power control for soil moisture
     digitalWrite(SOIL_MOIST_POWER, LOW);//Leave off by defualt
 
-    Serial.begin(9600);   // open serial over USB
 
     // Make sure your Serial Terminal app is closed before powering your device
     // Now open your Serial Terminal, and hit any key to continue!
-    Serial.println("Press any key to begin");
     //This line pauses the Serial port until a key is pressed
-    while(!Serial.available()) Spark.process();
+
 
     //Initialize the I2C sensors and ping them
     sensor.begin();
@@ -219,93 +216,9 @@ void loop()
     //alter this number to change the amount of time between each reading
     if(count == 5)
     {
-       printInfo();
        count = 0;
     }
   }
-}
-//---------------------------------------------------------------
-void printInfo()
-{
-  //This function prints the weather data out to the default Serial Port
-      Serial.print("Wind_Dir:");
-      switch (winddir)
-      {
-        case 0:
-          Serial.print("North");
-          break;
-        case 1:
-          Serial.print("NE");
-          break;
-        case 2:
-          Serial.print("East");
-          break;
-        case 3:
-          Serial.print("SE");
-          break;
-        case 4:
-          Serial.print("South");
-          break;
-        case 5:
-          Serial.print("SW");
-          break;
-        case 6:
-          Serial.print("West");
-          break;
-        case 7:
-          Serial.print("NW");
-          break;
-        default:
-          Serial.print("No Wind");
-          // if nothing else matches, do the
-          // default (which is optional)
-      }
-
-      Serial.print(" Wind_Speed:");
-      Serial.print(windspeedmph, 1);
-      Serial.print("mph, ");
-
-      Serial.print("Rain:");
-      Serial.print(rainin, 2);
-      Serial.print("in., ");
-
-      Serial.print("Temp:");
-      Serial.print(tempf);
-      Serial.print("F, ");
-
-      Serial.print("Humidity:");
-      Serial.print(humidity);
-      Serial.print("%, ");
-
-      Serial.print("Baro_Temp:");
-      Serial.print(baroTemp);
-      Serial.print("F, ");
-
-      Serial.print("Pressure:");
-      Serial.print(pascals/100);
-      Serial.print("hPa, ");
-      //The MPL3115A2 outputs the pressure in Pascals. However, most weather stations
-      //report pressure in hectopascals or millibars. Divide by 100 to get a reading
-      //more closely resembling what online weather reports may say in hPa or mb.
-      //Another common unit for pressure is Inches of Mercury (in.Hg). To convert
-      //from mb to in.Hg, use the following formula. P(inHg) = 0.0295300 * P(mb)
-      //More info on conversion can be found here:
-      //www.srh.noaa.gov/images/epz/wxcalc/pressureConversion.pdf
-
-      //If in altitude mode, print with these lines
-      //Serial.print("Altitude:");
-      //Serial.print(altf);
-      //Serial.println("ft.");
-
-      Serial.print("Soil_Temp:");
-      Serial.print(soiltempf);
-      Serial.print("F, ");
-
-      Serial.print("Soil_Mositure:");
-      Serial.println(soilMoisture);//Mositure Content is expressed as an analog
-      //value, which can range from 0 (completely dry) to the value of the
-      //materials' porosity at saturation. The sensor tends to max out between
-      //3000 and 3500.
 }
 //---------------------------------------------------------------
 void getSoilTemp()
@@ -390,7 +303,6 @@ float get_wind_speed()
 //---------------------------------------------------------------
 void getWeather()
 {
-
     // Measure Relative Humidity from the HTU21D or Si7021
     humidity = sensor.getRH();
 
@@ -467,7 +379,6 @@ int postToPhant()
     phant.add("tempf", tempf);
     phant.add("winddir", winddir);
     phant.add("windspeedmph", windspeedmph);
-    phant.add("devicename", deviceName);
 
     TCPClient client;
     char response[512];
@@ -476,7 +387,6 @@ int postToPhant()
 
     if (client.connect(server, 80))
     {
-        Serial.println("Posting!");
         client.print(phant.post());
         delay(1000);
         while (client.available())
@@ -488,13 +398,12 @@ int postToPhant()
         }
         if (strstr(response, "200 OK"))
         {
-            Serial.println(tempf);
-            Serial.println("Post success!");
+
             retVal = 1;
         }
         else if (strstr(response, "400 Bad Request"))
         {
-            Serial.println("Bad request");
+
             retVal = -1;
         }
         else
@@ -504,7 +413,7 @@ int postToPhant()
     }
     else
     {
-        Serial.println("connection failed");
+
         retVal = -3;
     }
     client.stop();
