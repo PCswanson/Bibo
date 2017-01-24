@@ -72,7 +72,7 @@ int soilMoisture = 0;
 
 int count = 0;
 
-// volatiles are subject to modification by IRQs
+// volatiles are subject to modificaton by IRQs
 volatile long lastWindIRQ = 0;
 volatile byte windClicks = 0;
 volatile unsigned long raintime, rainlast, raininterval, rain;
