@@ -26,6 +26,10 @@ const char server[] = "data.sparkfun.com"; // Phant destination server
 const char publicKey[] = "0lqbbKWjqvuqNovxX379"; // Phant public key
 const char privateKey[] = "D6MRRY7eMAcYq0AxyeMW"; // Phant private key
 Phant phant(server, publicKey, privateKey);
+
+char ID [] = "KNYESSEX3"; //Your station ID here
+char PASSWORD [] = "xxREMOVEDxx"; //your Weather Underground password here
+
 //Global Variables
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 long lastSecond; //The millis counter to see when a second rolls by
@@ -420,3 +424,34 @@ int postToPhant()
     return retVal;
 
 }
+void sendToWU()
+{
+  Serial.println("connecting...");
+  Spark.publish("Wunderground", "Upload");
+  if (client.connect(SERVER, 80)) {
+  Serial.println("Connected");
+  client.print(WEBPAGE);
+  client.print("ID=");
+  client.print(ID);
+  client.print("&PASSWORD=");
+  client.print(PASSWORD);
+  client.print("&dateutc=now");      //can use 'now' instead of time if sending in real time
+  client.print("&tempf=");
+  client.print(tempf);
+  client.print("&dewptf=");
+  client.print(dewptF);
+  client.print("&humidity=");
+  client.print(humidity);
+  client.print("&baromin=");
+  client.print(inches);
+  client.print("&winddir=");
+  client.print(winddir);
+  client.print("&windspeedmph=");
+  client.print(windspeedmph);
+  client.print("&rainin=");
+  client.print(rainin);
+  client.print("&dailyrainin=");
+  client.print(dailyrainin);
+  Spark.publish ("Online", "Yes");
+  }
+  
