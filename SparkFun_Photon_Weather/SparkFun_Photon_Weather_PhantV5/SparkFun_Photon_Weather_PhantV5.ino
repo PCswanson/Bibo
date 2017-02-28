@@ -73,7 +73,7 @@ float pascals = 0;
 float altf = 0;
 float baroTemp = 0;
 int soilMoisture = 0;
-
+String devicename = "bibo_01";
 int count = 0;
 
 // volatiles are subject to modificaton by IRQs
@@ -377,12 +377,20 @@ void getWeather()
 }
 int postToPhant()
 {
+    String devicename = "bibo_01";
+    Serial.print(Spark.deviceID());
+  //  if (Spark.deviceID() == "40004f001451353432393433"){
+  //    String devicename = "bibo_01";} else {
+  //    String devicename = "bibo_01";
+  //  }
+    Serial.print(devicename);
     phant.add("barotemp", baroTemp);
-    phant.add("humidity", humidity);
     phant.add("hectopascals", pascals/100);
+    phant.add("humidity", humidity);
     phant.add("tempf", tempf);
     phant.add("winddir", winddir);
     phant.add("windspeedmph", windspeedmph);
+    phant.add("devicename", devicename);
 
     TCPClient client;
     char response[512];
@@ -424,34 +432,3 @@ int postToPhant()
     return retVal;
 
 }
-void sendToWU()
-{
-  Serial.println("connecting...");
-  Spark.publish("Wunderground", "Upload");
-  if (client.connect(SERVER, 80)) {
-  Serial.println("Connected");
-  client.print(WEBPAGE);
-  client.print("ID=");
-  client.print(ID);
-  client.print("&PASSWORD=");
-  client.print(PASSWORD);
-  client.print("&dateutc=now");      //can use 'now' instead of time if sending in real time
-  client.print("&tempf=");
-  client.print(tempf);
-  client.print("&dewptf=");
-  client.print(dewptF);
-  client.print("&humidity=");
-  client.print(humidity);
-  client.print("&baromin=");
-  client.print(inches);
-  client.print("&winddir=");
-  client.print(winddir);
-  client.print("&windspeedmph=");
-  client.print(windspeedmph);
-  client.print("&rainin=");
-  client.print(rainin);
-  client.print("&dailyrainin=");
-  client.print(dailyrainin);
-  Spark.publish ("Online", "Yes");
-  }
-  
